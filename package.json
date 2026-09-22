@@ -1,0 +1,28 @@
+{
+  "name": "crypto-lab-tc26-pair",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "fixtures:generate": "node scripts/generate-reference-fixtures.mjs",
+    "wasm:build": "bash scripts/build-hypericum-wasm.sh && bash scripts/build-shipovnik-wasm.sh",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:a11y": "playwright test"
+  },
+  "dependencies": {
+    "@li0ard/streebog": "^0.2.6",
+    "lucide": "^1.47.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.6.2",
+    "typescript": "^5.9.2",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.0"
+  }
+}
