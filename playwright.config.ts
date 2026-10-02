@@ -9,12 +9,12 @@ export default defineConfig({
   reporter: 'list',
   use: {
     ...devices['Desktop Chrome'],
-    baseURL: 'http://localhost:4698/crypto-lab-tc26-pair/',
+    baseURL: 'http://localhost:4720/crypto-lab-tc26-pair/',
     colorScheme: 'dark',
   },
   webServer: {
-    command: 'npm run build && npm run preview -- --port 4698 --strictPort',
-    url: 'http://localhost:4698/crypto-lab-tc26-pair/',
+    command: 'npm run build && npm run preview -- --port 4720 --strictPort',
+    url: 'http://localhost:4720/crypto-lab-tc26-pair/',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
