@@ -1,0 +1,40 @@
+name: WASM provenance rebuild
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/wasm-provenance.yml'
+      - 'scripts/build-*-wasm.sh'
+      - 'scripts/check-wasm-provenance.py'
+      - 'native/**'
+      - 'src/wasm/provenance.json'
+
+permissions:
+  contents: read
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - name: Read and validate recorded artifact fingerprints
+        run: python3 scripts/check-wasm-provenance.py --check
+      - name: Install the explicitly selected compiler environment
+        run: |
+          git clone https://github.com/emscripten-core/emsdk.git /tmp/tc26-emsdk
+          git -C /tmp/tc26-emsdk checkout --detach c0bb220cb6e6f4e0fabb6f6db9efd53390ef5e56
+          /tmp/tc26-emsdk/emsdk install 4.0.23
+          /tmp/tc26-emsdk/emsdk activate 4.0.23
+      - name: Attempt pinned source rebuild and exact byte comparison
+        run: |
+          source /tmp/tc26-emsdk/emsdk_env.sh
+          python3 scripts/check-wasm-provenance.py --rebuild
+      - name: Preserve reproduction results and build logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: wasm-provenance
+          path: provenance-results/

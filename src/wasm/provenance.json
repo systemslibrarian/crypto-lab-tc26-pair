@@ -1,0 +1,21 @@
+{
+  "scope": "Distribution fingerprints and a selected rebuild environment; not a cryptographic audit",
+  "originalCompiler": null,
+  "testCompiler": { "version": "4.0.23", "emsdkCommit": "c0bb220cb6e6f4e0fabb6f6db9efd53390ef5e56" },
+  "artifacts": [
+    {
+      "path": "src/wasm/hypericum.wasm",
+      "sha256": "9c103702c37ac855cf1e2d17d750b10ee96fc53930e7c142f8b0833b9005bace",
+      "source": "https://github.com/QAPP-tech/hypericum_tc26",
+      "commit": "f3f254038e5539132d112e8f97332a2a351131fe",
+      "build": "scripts/build-hypericum-wasm.sh"
+    },
+    {
+      "path": "src/wasm/shipovnik.wasm",
+      "sha256": "5cea7a780a8fa18ac6bfcf9718dda96613e3f02de1300faed58f28c8f4530a4a",
+      "source": "https://github.com/QAPP-tech/shipovnik_tc26",
+      "commit": "a9139ef6178a6dfebac3ae328817a361f0e85256",
+      "build": "scripts/build-shipovnik-wasm.sh"
+    }
+  ]
+}
