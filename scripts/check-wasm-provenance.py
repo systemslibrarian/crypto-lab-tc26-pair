@@ -7,6 +7,8 @@ import argparse
 import hashlib
 import json
 import pathlib
+import platform
+import shutil
 import subprocess
 import sys
 
@@ -21,6 +23,30 @@ if args.check == args.rebuild:
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def tool_evidence(command):
+    """Record the tool actually found on PATH, not the manifest's CI selection."""
+    executable = shutil.which(command)
+    if executable is None:
+        return {'state': 'unavailable'}
+    resolved = pathlib.Path(executable).resolve()
+    try:
+        result = subprocess.run([executable, '--version'], capture_output=True,
+                                text=True, timeout=30)
+        return {'path': str(resolved), 'sha256': digest(resolved),
+                'exit': result.returncode,
+                'versionOutput': (result.stdout + result.stderr).strip()}
+    except (OSError, subprocess.TimeoutExpired) as error:
+        return {'path': str(resolved), 'state': 'unreadable', 'error': str(error)}
+
+# --check only fingerprints existing artifacts; it has no observed build tool.
+actual_environment = None
+if args.rebuild:
+    actual_environment = {
+        'system': platform.platform(),
+        'machine': platform.machine(),
+        'tools': {name: tool_evidence(name) for name in ('emcc', 'emcmake', 'cmake')},
+    }
 
 rows = []
 out = ROOT / 'provenance-results'
@@ -54,6 +80,7 @@ report = {
     'sourceSha': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
     'originalCompiler': manifest['originalCompiler'],
     'selectedTestCompiler': manifest['testCompiler'],
+    'actualBuildEnvironment': actual_environment,
     'scope': manifest['scope'],
     'artifacts': rows,
 }
