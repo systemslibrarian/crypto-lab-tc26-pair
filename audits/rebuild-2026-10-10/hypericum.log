@@ -1,0 +1,78 @@
+Cloning into '/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T//tc26-hypericum.v4n0DxyZ/source'...
+From https://github.com/QAPP-tech/hypericum_tc26
+ * branch            f3f254038e5539132d112e8f97332a2a351131fe -> FETCH_HEAD
+HEAD is now at f3f2540 Merge branch 'feature/5109-sync-with-pqlr' into 'main'
+emcmake: cmake -S /var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T//tc26-hypericum.v4n0DxyZ/source -B /var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T//tc26-hypericum.v4n0DxyZ/build -DPARAMSET=m_128_20 -DGOST_OPTIMIZATION=0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_CROSSCOMPILING_EMULATOR=/Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment/node/24.19.0_64bit/bin/node in directory /Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/crypto-lab-tc26-provenance-review
+-- Using Hypericum parameter set m_128_20
+-- GOST 34.11-2012 no optimization enabled
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-hypericum.v4n0DxyZ/build
+[  5%] Building C object streebog/CMakeFiles/streebog.dir/gost3411-2012-core.c.o
+shared:INFO: (Emscripten: Running sanity checks)
+cache:INFO: generating system headers: sysroot_install.stamp... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-tiwhxufc/compiler-cache/sysroot_install.stamp" for subsequent builds)
+cache:INFO:  - ok
+In file included from /var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-hypericum.v4n0DxyZ/source/streebog/gost3411-2012-core.c:10:
+/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-hypericum.v4n0DxyZ/source/streebog/gost3411-2012-core.h:28:1: warning: attribute '__aligned__' is ignored, place it after "union" to apply attribute to type declaration [-Wignored-attributes]
+   28 | ALIGN(16) union uint512_u
+      | ^
+/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-hypericum.v4n0DxyZ/source/streebog/gost3411-2012-core.h:15:34: note: expanded from macro 'ALIGN'
+   15 | #define ALIGN(x) __attribute__ ((__aligned__(x)))
+      |                                  ^
+1 warning generated.
+[ 10%] Linking C static library libstreebog.a
+[ 10%] Built target streebog
+[ 15%] Building C object CMakeFiles/hypericum.dir/sei_cryptoapi.c.o
+[ 21%] Building C object CMakeFiles/hypericum.dir/adrs.c.o
+[ 26%] Building C object CMakeFiles/hypericum.dir/drbg.c.o
+[ 36%] Building C object CMakeFiles/hypericum.dir/sign.c.o
+[ 36%] Building C object CMakeFiles/hypericum.dir/sei.c.o
+[ 47%] Building C object CMakeFiles/hypericum.dir/sei_urandom.c.o
+[ 47%] Building C object CMakeFiles/hypericum.dir/hash.c.o
+[ 52%] Building C object CMakeFiles/hypericum.dir/wotsc.c.o
+[ 57%] Building C object CMakeFiles/hypericum.dir/streebog.c.o
+[ 63%] Building C object CMakeFiles/hypericum.dir/xmssmt.c.o
+[ 68%] Building C object CMakeFiles/hypericum.dir/pack.c.o
+[ 73%] Building C object CMakeFiles/hypericum.dir/xmss.c.o
+[ 78%] Building C object CMakeFiles/hypericum.dir/hypericum.c.o
+[ 84%] Building C object CMakeFiles/hypericum.dir/fors.c.o
+[ 89%] Building C object CMakeFiles/hypericum.dir/utils.c.o
+[ 94%] Building C object CMakeFiles/hypericum.dir/stack.c.o
+In file included from /var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-hypericum.v4n0DxyZ/source/streebog.c:30:
+/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-hypericum.v4n0DxyZ/source/streebog/gost3411-2012-core.h:28:1: warning: attribute '__aligned__' is ignored, place it after "union" to apply attribute to type declaration [-Wignored-attributes]
+   28 | ALIGN(16) union uint512_u
+      | ^
+/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-hypericum.v4n0DxyZ/source/streebog/gost3411-2012-core.h:15:34: note: expanded from macro 'ALIGN'
+   15 | #define ALIGN(x) __attribute__ ((__aligned__(x)))
+      |                                  ^
+1 warning generated.
+[100%] Linking C static library libhypericum.a
+[100%] Built target hypericum
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libGL-getprocaddr.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-tiwhxufc/compiler-cache/sysroot/lib/wasm32-emscripten/libGL-getprocaddr.a" for subsequent builds)
+system_libs:INFO: compiled 4 inputs in 0.14s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libal.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-tiwhxufc/compiler-cache/sysroot/lib/wasm32-emscripten/libal.a" for subsequent builds)
+system_libs:INFO: compiled 1 inputs in 0.14s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libhtml5.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-tiwhxufc/compiler-cache/sysroot/lib/wasm32-emscripten/libhtml5.a" for subsequent builds)
+system_libs:INFO: compiled 5 inputs in 0.14s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libstubs.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-tiwhxufc/compiler-cache/sysroot/lib/wasm32-emscripten/libstubs.a" for subsequent builds)
+system_libs:INFO: compiled 2 inputs in 0.14s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libnoexit.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-tiwhxufc/compiler-cache/sysroot/lib/wasm32-emscripten/libnoexit.a" for subsequent builds)
+system_libs:INFO: compiled 1 inputs in 0.08s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libc.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-tiwhxufc/compiler-cache/sysroot/lib/wasm32-emscripten/libc.a" for subsequent builds)
+system_libs:INFO: compiled 1074 inputs in 4.59s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libdlmalloc.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-tiwhxufc/compiler-cache/sysroot/lib/wasm32-emscripten/libdlmalloc.a" for subsequent builds)
+system_libs:INFO: compiled 2 inputs in 0.19s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libclang_rt.builtins.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-tiwhxufc/compiler-cache/sysroot/lib/wasm32-emscripten/libclang_rt.builtins.a" for subsequent builds)
+system_libs:INFO: compiled 184 inputs in 1.11s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libsockets.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-tiwhxufc/compiler-cache/sysroot/lib/wasm32-emscripten/libsockets.a" for subsequent builds)
+system_libs:INFO: compiled 27 inputs in 0.44s
+cache:INFO:  - ok
+Built /private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-tiwhxufc/output/hypericum.js and /private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-tiwhxufc/output/hypericum.wasm
