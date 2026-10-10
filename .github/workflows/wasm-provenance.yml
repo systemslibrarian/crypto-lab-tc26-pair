@@ -8,6 +8,7 @@ on:
       - '.github/workflows/wasm-provenance.yml'
       - 'scripts/build-*-wasm.sh'
       - 'scripts/check-wasm-provenance.py'
+      - 'scripts/test-wasm-provenance.py'
       - 'native/**'
       - 'src/wasm/provenance.json'
 
@@ -20,14 +21,27 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v7
+      - name: Positive and negative provenance evidence controls
+        run: python3 scripts/test-wasm-provenance.py -v
       - name: Read and validate recorded artifact fingerprints
         run: python3 scripts/check-wasm-provenance.py --check
       - name: Install the explicitly selected compiler environment
         run: |
-          git clone https://github.com/emscripten-core/emsdk.git /tmp/tc26-emsdk
-          git -C /tmp/tc26-emsdk checkout --detach c0bb220cb6e6f4e0fabb6f6db9efd53390ef5e56
-          /tmp/tc26-emsdk/emsdk install 4.0.23
-          /tmp/tc26-emsdk/emsdk activate 4.0.23
+          git clone --no-checkout https://github.com/emscripten-core/emsdk.git /tmp/tc26-emsdk
+          git -C /tmp/tc26-emsdk fetch --depth 1 origin a2b92777574c2feda07994cd4f1079a3dfc151f8
+          git -C /tmp/tc26-emsdk checkout --detach a2b92777574c2feda07994cd4f1079a3dfc151f8
+          python3 - <<'PY'
+          import hashlib, json, pathlib, subprocess
+          selected = json.loads(pathlib.Path('src/wasm/provenance.json').read_text())['testCompiler']
+          sdk = pathlib.Path('/tmp/tc26-emsdk')
+          actual = subprocess.check_output(['git', '-C', str(sdk), 'rev-parse', 'HEAD'], text=True).strip()
+          assert actual == selected['emsdkCommit'] == 'a2b92777574c2feda07994cd4f1079a3dfc151f8'
+          tags = (sdk / 'emscripten-releases-tags.json').read_bytes()
+          assert hashlib.sha256(tags).hexdigest() == selected['releaseTagsSha256']
+          assert json.loads(tags)['releases'][selected['version']] == selected['releaseHash']
+          PY
+          /tmp/tc26-emsdk/emsdk install 6.0.10
+          /tmp/tc26-emsdk/emsdk activate 6.0.10
       - name: Attempt pinned source rebuild and exact byte comparison
         run: |
           source /tmp/tc26-emsdk/emsdk_env.sh

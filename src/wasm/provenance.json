@@ -1,7 +1,20 @@
 {
   "scope": "Distribution fingerprints and a selected rebuild environment; not a cryptographic audit",
   "originalCompiler": null,
-  "testCompiler": { "version": "4.0.23", "emsdkCommit": "c0bb220cb6e6f4e0fabb6f6db9efd53390ef5e56" },
+  "testCompiler": {
+    "version": "6.0.10",
+    "emsdkCommit": "a2b92777574c2feda07994cd4f1079a3dfc151f8",
+    "releaseHash": "666337b525e673e769121856d175f6f52b8ead64",
+    "releaseTagsSha256": "28ab300d0110f50c2ea6b456ae5218e66ab4d959cd5d56d75a424d2696b73440"
+  },
+  "historicalTestCompilers": [
+    {
+      "version": "4.0.23",
+      "emsdkCommit": "c0bb220cb6e6f4e0fabb6f6db9efd53390ef5e56",
+      "result": "Both source builds succeeded; both WASM byte comparisons mismatched",
+      "run": "https://github.com/systemslibrarian/crypto-lab-tc26-pair/actions/runs/37892405640"
+    }
+  ],
   "artifacts": [
     {
       "path": "src/wasm/hypericum.wasm",
