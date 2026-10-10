@@ -167,6 +167,14 @@ def collect(root, rebuild, out, timeout=600):
                 'compilerConfiguration': compiler_configuration(),
                 'cache': 'new empty cache per artifact',
             }
+            tools = report['actualBuildEnvironment']['tools']
+            unavailable = [name for name in ('emcc', 'emcmake', 'cmake')
+                           if not tools[name].get('path') or
+                           tools[name].get('state') in ('unavailable', 'unreadable') or
+                           (name != 'emcmake' and tools[name].get('exit') != 0)]
+            if unavailable:
+                report['error'] = 'Unreadable build prerequisites: ' + ', '.join(unavailable)
+                return report, 2
         observed_paths = {'src/wasm/provenance.json'}
         for artifact in manifest['artifacts']:
             stem = pathlib.PurePosixPath(artifact['path']).stem

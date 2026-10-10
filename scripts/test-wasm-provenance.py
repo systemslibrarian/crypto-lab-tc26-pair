@@ -60,7 +60,7 @@ class ProvenanceControls(unittest.TestCase):
     def collect(self, rebuild=False, timeout=1):
         # Tool inspection is not compiler execution and is outside these offline
         # evidence controls; real compiler identities are captured by --rebuild.
-        with patch.object(provenance, 'tool_evidence', return_value={'state': 'fixture'}):
+        with patch.object(provenance, 'tool_evidence', return_value={'path': 'fixture', 'exit': 0}):
             return provenance.collect(self.root, rebuild, self.root / 'reports', timeout)
 
     def replace_build(self, name, text):
@@ -99,6 +99,16 @@ class ProvenanceControls(unittest.TestCase):
         self.assertTrue(report['trackedEvidenceUnchanged'])
         self.assertTrue(all(a['adapterMatches'] for a in report['artifacts']))
         self.assertEqual(before, {p: p.read_bytes() for p in before})
+
+    def test_missing_compiler_is_unreadable_not_success_or_failed_crypto(self):
+        with patch.object(provenance, 'tool_evidence', side_effect=lambda name:
+                          {'state': 'unavailable'} if name == 'emcc' else
+                          {'path': 'fixture', 'exit': 0}):
+            report, code = provenance.collect(self.root, True, self.root / 'reports', 1)
+        self.assertEqual(code, 2)
+        self.assertEqual(report['attemptedCount'], 0)
+        self.assertEqual(report['checkedCount'], 0)
+        self.assertEqual(report['state'], 'unreadable')
 
     def test_symlinked_temporary_root_uses_canonical_compiler_cache(self):
         real = self.root / 'real-temp'
