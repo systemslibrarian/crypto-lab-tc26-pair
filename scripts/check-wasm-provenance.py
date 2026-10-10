@@ -103,10 +103,18 @@ def compiler_configuration():
         for field, executable in [('LLVM_ROOT', 'clang'), ('LLVM_ROOT', 'wasm-ld'),
                                   ('BINARYEN_ROOT', 'bin/wasm-opt')]:
             if isinstance(values.get(field), str):
-                tools[executable] = tool_evidence(str(pathlib.Path(values[field]) / executable))
+                directory = pathlib.Path(values[field])
+                if not directory.is_absolute():
+                    directory = path.parent / directory
+                tools[executable] = tool_evidence(str(directory / executable))
         node = values.get('NODE_JS')
+        if isinstance(node, str):
+            node = [node]
         if isinstance(node, (list, tuple)) and node and isinstance(node[0], str):
-            tools['compilerNode'] = tool_evidence(node[0])
+            executable = pathlib.Path(node[0])
+            if not executable.is_absolute():
+                executable = path.parent / executable
+            tools['compilerNode'] = tool_evidence(str(executable))
         return {'state': 'readable', 'path': str(path.resolve()),
                 'sha256': digest(path), 'selectedTools': tools}
     except (OSError, SyntaxError) as error:

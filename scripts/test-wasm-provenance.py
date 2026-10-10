@@ -2,6 +2,7 @@
 import hashlib
 import importlib.util
 import json
+import os
 import pathlib
 import subprocess
 import sys
@@ -73,6 +74,21 @@ class ProvenanceControls(unittest.TestCase):
         self.assertEqual(report['state'], 'fingerprint-verified-rebuild-unverified')
         self.assertIsNone(report['actualBuildEnvironment'])
         self.assertIsNone(report['originalCompiler'])
+
+    def test_compiler_relative_tool_paths_are_read_without_executing_configuration(self):
+        config = self.root / '.emscripten'
+        marker = self.root / 'must-not-execute'
+        config.write_text("LLVM_ROOT = 'sdk/bin'\nBINARYEN_ROOT = 'sdk'\n"
+                          "NODE_JS = 'node/bin/node'\n"
+                          "open(" + repr(str(marker)) + ", 'w').write('bad')\n")
+        with patch.dict(os.environ, {'EM_CONFIG': str(config)}), patch.object(
+                provenance, 'tool_evidence', side_effect=lambda p: {'path': p}):
+            report = provenance.compiler_configuration()
+        self.assertEqual(report['selectedTools']['clang']['path'],
+                         str(self.root / 'sdk/bin/clang'))
+        self.assertEqual(report['selectedTools']['compilerNode']['path'],
+                         str(self.root / 'node/bin/node'))
+        self.assertFalse(marker.exists())
 
     def test_both_fresh_outputs_match_and_tracked_files_are_unchanged(self):
         before = {p: p.read_bytes() for p in (self.root / 'src/wasm').iterdir()}
