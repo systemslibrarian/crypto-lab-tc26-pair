@@ -6,6 +6,7 @@ Fingerprint checks never establish source correspondence. Rebuilds never replace
 the shipped files. Original compiler identity is independent of a test compiler.
 """
 import argparse
+import ast
 import hashlib
 import json
 import os
@@ -80,6 +81,38 @@ def tool_evidence(command):
         return {'path': str(resolved), 'state': 'unreadable', 'error': str(error)}
 
 
+def compiler_configuration():
+    # Read literal configuration without executing Python from a config file.
+    # PATH's node/clang can differ from the executables selected by emcc itself.
+    configured = os.environ.get('EM_CONFIG')
+    sdk = os.environ.get('EMSDK')
+    path = pathlib.Path(configured) if configured else (
+        pathlib.Path(sdk) / '.emscripten' if sdk else None)
+    if path is None:
+        return {'state': 'not-captured', 'reason': 'No explicit EM_CONFIG/EMSDK'}
+    try:
+        values = {}
+        for node in ast.parse(path.read_text()).body:
+            if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(
+                    node.targets[0], ast.Name):
+                try:
+                    values[node.targets[0].id] = ast.literal_eval(node.value)
+                except (ValueError, TypeError):
+                    pass
+        tools = {}
+        for field, executable in [('LLVM_ROOT', 'clang'), ('LLVM_ROOT', 'wasm-ld'),
+                                  ('BINARYEN_ROOT', 'bin/wasm-opt')]:
+            if isinstance(values.get(field), str):
+                tools[executable] = tool_evidence(str(pathlib.Path(values[field]) / executable))
+        node = values.get('NODE_JS')
+        if isinstance(node, (list, tuple)) and node and isinstance(node[0], str):
+            tools['compilerNode'] = tool_evidence(node[0])
+        return {'state': 'readable', 'path': str(path.resolve()),
+                'sha256': digest(path), 'selectedTools': tools}
+    except (OSError, SyntaxError) as error:
+        return {'state': 'unreadable', 'path': str(path), 'error': str(error)}
+
+
 def run_build(command, root, environment, log, timeout):
     # Stop the whole build process group on timeout, including compiler children.
     process = subprocess.Popen(command, cwd=root, env=environment, stdout=log,
@@ -123,6 +156,7 @@ def collect(root, rebuild, out, timeout=600):
                 'system': platform.platform(), 'machine': platform.machine(),
                 'tools': {name: tool_evidence(name) for name in
                           ('emcc', 'emcmake', 'cmake', 'node')},
+                'compilerConfiguration': compiler_configuration(),
                 'cache': 'new empty cache per artifact',
             }
         observed_paths = {'src/wasm/provenance.json'}

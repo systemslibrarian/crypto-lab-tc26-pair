@@ -4,12 +4,14 @@ import importlib.util
 import json
 import pathlib
 import subprocess
+import sys
 import tempfile
 import time
 import unittest
 from unittest.mock import patch
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+sys.dont_write_bytecode = True
 spec = importlib.util.spec_from_file_location('provenance', ROOT / 'scripts/check-wasm-provenance.py')
 provenance = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(provenance)
