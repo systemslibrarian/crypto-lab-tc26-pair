@@ -1,0 +1,80 @@
+Cloning into '/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T//tc26-shipovnik.hUX6K0fY/source'...
+From https://github.com/QAPP-tech/shipovnik_tc26
+ * branch            a9139ef6178a6dfebac3ae328817a361f0e85256 -> FETCH_HEAD
+HEAD is now at a9139ef Fix error by one in example
+emcmake: cmake -S /var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T//tc26-shipovnik.hUX6K0fY/source -B /var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T//tc26-shipovnik.hUX6K0fY/build -DGOST_OPTIMIZATION=0 -DENTROPY_SOURCE=/dev/zero -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_CROSSCOMPILING_EMULATOR=/Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment/node/24.19.0_64bit/bin/node in directory /Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/crypto-lab-tc26-provenance-review
+CMake Warning (deprecated) at streebog/CMakeLists.txt:1 (CMAKE_MINIMUM_REQUIRED):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+This warning is for project developers.  Use -Wno-author or -Wno-deprecated
+to suppress it.
+
+-- GOST 34.11-2012 no optimization enabled
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-shipovnik.hUX6K0fY/build
+[  8%] Building C object streebog/CMakeFiles/streebog.dir/gost3411-2012-core.c.o
+shared:INFO: (Emscripten: Running sanity checks)
+cache:INFO: generating system headers: sysroot_install.stamp... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-yludhu51/compiler-cache/sysroot_install.stamp" for subsequent builds)
+cache:INFO:  - ok
+In file included from /var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-shipovnik.hUX6K0fY/source/streebog/gost3411-2012-core.c:10:
+/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-shipovnik.hUX6K0fY/source/streebog/gost3411-2012-core.h:28:1: warning: attribute '__aligned__' is ignored, place it after "union" to apply attribute to type declaration [-Wignored-attributes]
+   28 | ALIGN(16) union uint512_u
+      | ^
+/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-shipovnik.hUX6K0fY/source/streebog/gost3411-2012-core.h:15:34: note: expanded from macro 'ALIGN'
+   15 | #define ALIGN(x) __attribute__ ((__aligned__(x)))
+      |                                  ^
+1 warning generated.
+[ 16%] Linking C static library libstreebog.a
+[ 16%] Built target streebog
+[ 25%] Building C object CMakeFiles/shipovnik.dir/src/h_prime.c.o
+[ 33%] Building C object CMakeFiles/shipovnik.dir/src/utils.c.o
+[ 41%] Building C object CMakeFiles/shipovnik.dir/src/syndrome.c.o
+[ 50%] Building C object CMakeFiles/shipovnik.dir/src/genvector.c.o
+[ 58%] Building C object CMakeFiles/shipovnik.dir/src/shipovnik.c.o
+[ 75%] Building C object CMakeFiles/shipovnik.dir/src/hash.c.o
+[ 75%] Building C object CMakeFiles/shipovnik.dir/src/sign.c.o
+[ 83%] Building C object CMakeFiles/shipovnik.dir/src/multiword.c.o
+[ 91%] Building C object CMakeFiles/shipovnik.dir/src/randombytes.c.o
+In file included from /var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-shipovnik.hUX6K0fY/source/src/hash.c:30:
+/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-shipovnik.hUX6K0fY/source/streebog/gost3411-2012-core.h:28:1: warning: attribute '__aligned__' is ignored, place it after "union" to apply attribute to type declaration [-Wignored-attributes]
+   28 | ALIGN(16) union uint512_u
+      | ^
+/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-shipovnik.hUX6K0fY/source/streebog/gost3411-2012-core.h:15:34: note: expanded from macro 'ALIGN'
+   15 | #define ALIGN(x) __attribute__ ((__aligned__(x)))
+      |                                  ^
+1 warning generated.
+[100%] Linking C static library libshipovnik.a
+[100%] Built target shipovnik
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libGL-getprocaddr.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-yludhu51/compiler-cache/sysroot/lib/wasm32-emscripten/libGL-getprocaddr.a" for subsequent builds)
+system_libs:INFO: compiled 4 inputs in 0.14s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libal.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-yludhu51/compiler-cache/sysroot/lib/wasm32-emscripten/libal.a" for subsequent builds)
+system_libs:INFO: compiled 1 inputs in 0.14s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libhtml5.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-yludhu51/compiler-cache/sysroot/lib/wasm32-emscripten/libhtml5.a" for subsequent builds)
+system_libs:INFO: compiled 5 inputs in 0.14s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libstubs.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-yludhu51/compiler-cache/sysroot/lib/wasm32-emscripten/libstubs.a" for subsequent builds)
+system_libs:INFO: compiled 2 inputs in 0.12s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libnoexit.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-yludhu51/compiler-cache/sysroot/lib/wasm32-emscripten/libnoexit.a" for subsequent builds)
+system_libs:INFO: compiled 1 inputs in 0.08s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libc.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-yludhu51/compiler-cache/sysroot/lib/wasm32-emscripten/libc.a" for subsequent builds)
+system_libs:INFO: compiled 1074 inputs in 4.77s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libdlmalloc.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-yludhu51/compiler-cache/sysroot/lib/wasm32-emscripten/libdlmalloc.a" for subsequent builds)
+system_libs:INFO: compiled 2 inputs in 0.21s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libclang_rt.builtins.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-yludhu51/compiler-cache/sysroot/lib/wasm32-emscripten/libclang_rt.builtins.a" for subsequent builds)
+system_libs:INFO: compiled 184 inputs in 1.27s
+cache:INFO:  - ok
+cache:INFO: generating system library: sysroot/lib/wasm32-emscripten/libsockets.a... (this will be cached in "/private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-yludhu51/compiler-cache/sysroot/lib/wasm32-emscripten/libsockets.a" for subsequent builds)
+system_libs:INFO: compiled 27 inputs in 0.44s
+cache:INFO:  - ok
+Built /private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-yludhu51/output/shipovnik.js and /private/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/tc26-provenance-yludhu51/output/shipovnik.wasm
