@@ -78,8 +78,8 @@ class ProvenanceControls(unittest.TestCase):
     def test_compiler_relative_tool_paths_are_read_without_executing_configuration(self):
         config = self.root / '.emscripten'
         marker = self.root / 'must-not-execute'
-        config.write_text("LLVM_ROOT = 'sdk/bin'\nBINARYEN_ROOT = 'sdk'\n"
-                          "NODE_JS = 'node/bin/node'\n"
+        config.write_text("LLVM_ROOT = '$CFGDIR/sdk/bin'\nBINARYEN_ROOT = 'sdk'\n"
+                          "NODE_JS = '$CFGDIR/node/bin/node'\n"
                           "open(" + repr(str(marker)) + ", 'w').write('bad')\n")
         with patch.dict(os.environ, {'EM_CONFIG': str(config)}), patch.object(
                 provenance, 'tool_evidence', side_effect=lambda p: {'path': p}):

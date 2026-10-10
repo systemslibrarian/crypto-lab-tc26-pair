@@ -103,7 +103,7 @@ def compiler_configuration():
         for field, executable in [('LLVM_ROOT', 'clang'), ('LLVM_ROOT', 'wasm-ld'),
                                   ('BINARYEN_ROOT', 'bin/wasm-opt')]:
             if isinstance(values.get(field), str):
-                directory = pathlib.Path(values[field])
+                directory = pathlib.Path(values[field].replace('$CFGDIR', str(path.parent)))
                 if not directory.is_absolute():
                     directory = path.parent / directory
                 tools[executable] = tool_evidence(str(directory / executable))
@@ -111,7 +111,7 @@ def compiler_configuration():
         if isinstance(node, str):
             node = [node]
         if isinstance(node, (list, tuple)) and node and isinstance(node[0], str):
-            executable = pathlib.Path(node[0])
+            executable = pathlib.Path(node[0].replace('$CFGDIR', str(path.parent)))
             if not executable.is_absolute():
                 executable = path.parent / executable
             tools['compilerNode'] = tool_evidence(str(executable))
