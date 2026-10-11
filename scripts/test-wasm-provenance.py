@@ -57,7 +57,19 @@ class ProvenanceControls(unittest.TestCase):
     def write_manifest(self):
         self.manifest_path.write_text(json.dumps(self.manifest))
 
-    def collect(self, rebuild=False, timeout=1):
+    def commit_inputs(self):
+        # Fault fixtures describe a committed input tree unless a control
+        # explicitly tests an uncommitted or untracked evidence path.
+        subprocess.run(['git', 'add', 'src', 'scripts', 'native'], cwd=self.root,
+                       check=True, capture_output=True)
+        subprocess.run(['git', '-c', 'user.name=Fixture', '-c',
+                        'user.email=fixture@example.invalid', 'commit',
+                        '--allow-empty', '-qm', 'control inputs'],
+                       cwd=self.root, check=True, capture_output=True)
+
+    def collect(self, rebuild=False, timeout=1, commit=True):
+        if commit:
+            self.commit_inputs()
         # Tool inspection is not compiler execution and is outside these offline
         # evidence controls; real compiler identities are captured by --rebuild.
         with patch.object(provenance, 'tool_evidence', return_value={'path': 'fixture', 'exit': 0}):
@@ -99,6 +111,43 @@ class ProvenanceControls(unittest.TestCase):
         self.assertTrue(report['trackedEvidenceUnchanged'])
         self.assertTrue(all(a['adapterMatches'] for a in report['artifacts']))
         self.assertEqual(before, {p: p.read_bytes() for p in before})
+
+    def test_dirty_build_inputs_cannot_claim_the_recorded_commit(self):
+        for relative in ('native/hypericum_wrapper.c',
+                         'scripts/build-hypericum-wasm.sh',
+                         'src/wasm/hypericum.js'):
+            with self.subTest(path=relative):
+                path = self.root / relative
+                original = path.read_bytes()
+                path.write_bytes(original + b'\n/* uncommitted */')
+                report, code = self.collect(True, commit=False)
+                self.assertEqual(code, 2)
+                self.assertEqual(report['state'], 'uncommitted-source')
+                self.assertEqual(report['attemptedCount'], 0)
+                self.assertIn(relative, report['error'])
+                path.write_bytes(original)
+
+    def test_untracked_required_inputs_remain_unreadable(self):
+        subprocess.run(['git', 'rm', '--cached', 'native/hypericum_wrapper.c'],
+                       cwd=self.root, check=True, capture_output=True)
+        subprocess.run(['git', '-c', 'user.name=Fixture', '-c',
+                        'user.email=fixture@example.invalid', 'commit', '-qm',
+                        'untracked wrapper control'], cwd=self.root, check=True,
+                       capture_output=True)
+        report, code = self.collect(True, commit=False)
+        self.assertEqual(code, 2)
+        self.assertEqual(report['state'], 'unreadable')
+        self.assertEqual(report['attemptedCount'], 0)
+
+    def test_clean_rebuild_retains_exact_git_blob_identities(self):
+        report, code = self.collect(True)
+        self.assertEqual(code, 0)
+        self.assertEqual(len(report['inputGitBlobs']), 9)
+        for relative, blob in report['inputGitBlobs'].items():
+            actual = subprocess.check_output(
+                ['git', 'rev-parse', report['sourceSha'] + ':' + relative],
+                cwd=self.root, text=True).strip()
+            self.assertEqual(blob, actual)
 
     def test_missing_compiler_is_unreadable_not_success_or_failed_crypto(self):
         with patch.object(provenance, 'tool_evidence', side_effect=lambda name:

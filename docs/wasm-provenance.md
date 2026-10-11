@@ -33,6 +33,8 @@ SHA at start/end, manifest/build-script/wrapper hashes, build exit codes,
 fingerprints, fresh WASM comparison and a separate JS adapter comparison. Missing
 outputs from a successful build remain incomplete; a stale tracked artifact
 cannot stand in for fresh output. A timeout stops the whole process group.
+Inputs must match their exact recorded Git blobs before any build; an initially
+dirty wrapper, script, adapter or binary cannot be labeled as that commit.
 Changed tracked inputs or HEAD invalidate the observation. The exact-byte gate
 currently covers the two WASM files; adapter comparisons are separately reported.
 Use `--output PATH` to retain reports/logs outside the default ignored
@@ -46,7 +48,8 @@ The official Emscripten 6.0.10 SDK is pinned to:
 - release hash `666337b525e673e769121856d175f6f52b8ead64`
 - release-map SHA-256 `28ab300d0110f50c2ea6b456ae5218e66ab4d959cd5d56d75a424d2696b73440`
 
-The read-only **WASM provenance rebuild** PR workflow verifies the SDK source
+The read-only **WASM provenance rebuild** workflow runs on relevant main pushes
+and pull requests, including shipped WASM/JS adapters and native/build inputs. It verifies the SDK source
 and release-map identities before installing that version. It runs the offline
 positive/negative controls, both clean source builds and exact comparisons, then
 preserves the report and full logs even on failure. It does not publish or commit

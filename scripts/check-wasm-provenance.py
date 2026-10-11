@@ -182,6 +182,19 @@ def collect(root, rebuild, out, timeout=600):
                                    'native/' + stem + '_wrapper.c',
                                    'src/wasm/' + stem + '.js'))
         before = {p: digest(readable_file(root, p)) for p in observed_paths}
+        # A stable dirty worktree is not evidence for the recorded commit.
+        # Require every captured build input to be a tracked blob at this SHA.
+        report['inputGitBlobs'] = {}
+        for relative in sorted(observed_paths):
+            reference = report['sourceSha'] + ':' + relative
+            captured = subprocess.check_output(
+                ['git', 'show', reference], cwd=root, stderr=subprocess.PIPE)
+            if hashlib.sha256(captured).hexdigest() != before[relative]:
+                report['state'] = 'uncommitted-source'
+                report['error'] = 'Build input differs from recorded commit: ' + relative
+                return report, 2
+            report['inputGitBlobs'][relative] = subprocess.check_output(
+                ['git', 'rev-parse', reference], cwd=root, text=True).strip()
         for artifact in manifest['artifacts']:
             row = dict(artifact)
             stem = pathlib.PurePosixPath(artifact['path']).stem

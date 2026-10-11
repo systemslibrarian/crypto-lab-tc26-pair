@@ -2,6 +2,15 @@ name: WASM provenance rebuild
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/wasm-provenance.yml'
+      - 'scripts/build-*-wasm.sh'
+      - 'scripts/check-wasm-provenance.py'
+      - 'scripts/test-wasm-provenance.py'
+      - 'native/**'
+      - 'src/wasm/**'
   pull_request:
     branches: [main]
     paths:
@@ -10,7 +19,7 @@ on:
       - 'scripts/check-wasm-provenance.py'
       - 'scripts/test-wasm-provenance.py'
       - 'native/**'
-      - 'src/wasm/provenance.json'
+      - 'src/wasm/**'
 
 permissions:
   contents: read
