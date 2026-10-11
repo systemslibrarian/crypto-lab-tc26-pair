@@ -1,0 +1,116 @@
+{
+  "sourceSha": "8b8d3b98e244eab9ae8aa84795a4963db06c322f",
+  "originalCompiler": null,
+  "selectedTestCompiler": {
+    "version": "6.0.10",
+    "emsdkCommit": "a2b92777574c2feda07994cd4f1079a3dfc151f8",
+    "releaseHash": "666337b525e673e769121856d175f6f52b8ead64",
+    "releaseTagsSha256": "28ab300d0110f50c2ea6b456ae5218e66ab4d959cd5d56d75a424d2696b73440"
+  },
+  "actualBuildEnvironment": {
+    "system": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "tools": {
+      "emcc": {
+        "path": "/Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment/upstream/emscripten/emcc",
+        "sha256": "498eba9b6aacffca1c358ba340fc7b37015d7867cb211c7f2d45784ee9310f03",
+        "exit": 0,
+        "versionOutput": "emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.10 (d6c521a7f05449857c76bd99e396895583cf2083)\nCopyright (C) 2026 the Emscripten authors (see AUTHORS.txt)\nThis is free and open source software under the MIT license.\nThere is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+      },
+      "emcmake": {
+        "path": "/Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment/upstream/emscripten/emcmake",
+        "sha256": "18c8397cf60835533e0db88d1172e04fa0b753dea68e978149d923a9e6378af3",
+        "exit": 1,
+        "versionOutput": "emcmake is a helper for cmake, setting various environment\nvariables so that emcc etc. are used. Typical usage:\n\n  emcmake cmake [FLAGS]"
+      },
+      "cmake": {
+        "path": "/opt/homebrew/Cellar/cmake/4.4.3/bin/cmake",
+        "sha256": "01bb5214684f5390e96e0d6aef7aafd7415b77ecbcfd59f6b55b018d8de0d9a2",
+        "exit": 0,
+        "versionOutput": "cmake version 4.4.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake)."
+      },
+      "node": {
+        "path": "/Users/gmcas/repos/.fleet-maintenance-20261009/node24/node-v24.21.0-darwin-arm64/bin/node",
+        "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+        "exit": 0,
+        "versionOutput": "v24.21.0"
+      }
+    },
+    "compilerConfiguration": {
+      "state": "readable",
+      "path": "/Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment/.emscripten",
+      "sha256": "4b97836586e977f7553047617e7cd163142be2909eeae8ac6ede506f0e39adf1",
+      "selectedTools": {
+        "clang": {
+          "path": "/Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment/upstream/bin/clang-24",
+          "sha256": "f126a277f97554cfc9535c36e028a82486a25ca76a04976760324d8173304098",
+          "exit": 0,
+          "versionOutput": "clang version 24.0.0git (https:/github.com/llvm/llvm-project a06d9165905ce89b5ffef2bbb84c886d60a9b8bf)\nTarget: unknown\nThread model: posix\nInstalledDir: /Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment/upstream/bin"
+        },
+        "wasm-ld": {
+          "path": "/Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment/upstream/bin/lld",
+          "sha256": "0bfe3f4fe5ad0b3734c49ea582a3a2d15fe18e0c8d3bd8efaf1183fbb260d6de",
+          "exit": 0,
+          "versionOutput": "LLD 24.0.0 (/Volumes/Work/s/w/ir/cache/git/chromium.googlesource.com-external-github.com-llvm-llvm--project a06d9165905ce89b5ffef2bbb84c886d60a9b8bf)"
+        },
+        "bin/wasm-opt": {
+          "path": "/Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment/upstream/bin/wasm-opt",
+          "sha256": "cb225181d96f0eb20b34bb9e5e2dd8e0dc303a98eeb9feb08a30f68e836b6946",
+          "exit": 0,
+          "versionOutput": "wasm-opt version 132 (version_129-419-gfbf2e5aa2)"
+        },
+        "compilerNode": {
+          "path": "/Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment/node/24.19.0_64bit/bin/node",
+          "sha256": "27db838bb204ef7c21df2931f5656e4c8fb32e6e947f363a402b49714d32b5b1",
+          "exit": 0,
+          "versionOutput": "v24.19.0"
+        }
+      }
+    },
+    "cache": "new empty cache per artifact"
+  },
+  "scope": "Distribution fingerprints and a selected rebuild environment; not a cryptographic audit",
+  "requiredCount": 2,
+  "attemptedCount": 2,
+  "checkedCount": 2,
+  "artifacts": [
+    {
+      "path": "src/wasm/hypericum.wasm",
+      "sha256": "9c103702c37ac855cf1e2d17d750b10ee96fc53930e7c142f8b0833b9005bace",
+      "source": "https://github.com/QAPP-tech/hypericum_tc26",
+      "commit": "f3f254038e5539132d112e8f97332a2a351131fe",
+      "build": "scripts/build-hypericum-wasm.sh",
+      "trackedSha256": "9c103702c37ac855cf1e2d17d750b10ee96fc53930e7c142f8b0833b9005bace",
+      "buildScriptSha256": "1e969dc0901c5a37e633adc2816c3ce18c5390cdb84fd895b09c3b5a8088723f",
+      "wrapperSha256": "655dc5f7698ac10e616266a29aa8de204df26db2d154c51fae442b3a7b78e2b3",
+      "fingerprintMatches": true,
+      "buildExit": 0,
+      "rebuiltSha256": "9c103702c37ac855cf1e2d17d750b10ee96fc53930e7c142f8b0833b9005bace",
+      "rebuiltAdapterSha256": "2da24a233e33cad99d0971f10a368dec4cdaa39e86bf941198840de036e948a2",
+      "trackedAdapterSha256": "2da24a233e33cad99d0971f10a368dec4cdaa39e86bf941198840de036e948a2",
+      "adapterMatches": true,
+      "state": "byte-identical"
+    },
+    {
+      "path": "src/wasm/shipovnik.wasm",
+      "sha256": "5cea7a780a8fa18ac6bfcf9718dda96613e3f02de1300faed58f28c8f4530a4a",
+      "source": "https://github.com/QAPP-tech/shipovnik_tc26",
+      "commit": "a9139ef6178a6dfebac3ae328817a361f0e85256",
+      "build": "scripts/build-shipovnik-wasm.sh",
+      "trackedSha256": "5cea7a780a8fa18ac6bfcf9718dda96613e3f02de1300faed58f28c8f4530a4a",
+      "buildScriptSha256": "66c9510eec5487109032135f9acffccee8a7d394d0310df6df4129031e617ceb",
+      "wrapperSha256": "f2de305d76edd5cf9bb32eddbe3b62954465ee7b7805d3716785bb619252b476",
+      "fingerprintMatches": true,
+      "buildExit": 0,
+      "rebuiltSha256": "5cea7a780a8fa18ac6bfcf9718dda96613e3f02de1300faed58f28c8f4530a4a",
+      "rebuiltAdapterSha256": "d6e8fd776e0ade75a941b11db351d2265c0f2c589035d03fb50567459baeea42",
+      "trackedAdapterSha256": "d6e8fd776e0ade75a941b11db351d2265c0f2c589035d03fb50567459baeea42",
+      "adapterMatches": true,
+      "state": "byte-identical"
+    }
+  ],
+  "state": "byte-identical",
+  "manifestSha256": "956882fd8d67b3c6d853988b3dc15847108f8c0f6eb19c9c226c7d1585c84ae6",
+  "endingSourceSha": "8b8d3b98e244eab9ae8aa84795a4963db06c322f",
+  "trackedEvidenceUnchanged": true
+}

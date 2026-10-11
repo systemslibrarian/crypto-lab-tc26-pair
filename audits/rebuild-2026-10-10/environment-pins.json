@@ -1,0 +1,98 @@
+{
+  "officialSdkSourceEvidence": {
+    "at": "2026-10-10T23:35:06.601865+00:00",
+    "officialRef": {
+      "ref": "refs/tags/6.0.10",
+      "node_id": "MDM6UmVmMTI2MTM5NjM6cmVmcy90YWdzLzYuMC4xMA==",
+      "url": "https://api.github.com/repos/emscripten-core/emsdk/git/refs/tags/6.0.10",
+      "object": {
+        "sha": "a2b92777574c2feda07994cd4f1079a3dfc151f8",
+        "type": "commit",
+        "url": "https://api.github.com/repos/emscripten-core/emsdk/git/commits/a2b92777574c2feda07994cd4f1079a3dfc151f8"
+      }
+    },
+    "tag": null,
+    "emsdkCommit": "a2b92777574c2feda07994cd4f1079a3dfc151f8",
+    "manifestBlob": "942483dff468963119600a2773fec56998d25487",
+    "manifestSha256": "28ab300d0110f50c2ea6b456ae5218e66ab4d959cd5d56d75a424d2696b73440",
+    "releaseHash": "666337b525e673e769121856d175f6f52b8ead64"
+  },
+  "sdkInstallation": {
+    "startedAt": "2026-10-10T23:39:55.148237+00:00",
+    "finishedAt": "2026-10-10T23:40:22.539854+00:00",
+    "sourceSha": "a2b92777574c2feda07994cd4f1079a3dfc151f8",
+    "environmentPath": "/Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment"
+  },
+  "installationCommands": [
+    {
+      "command": [
+        "git",
+        "clone",
+        "--no-checkout",
+        "https://github.com/emscripten-core/emsdk.git",
+        "/Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-emsdk-source"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "fetch",
+        "origin",
+        "a2b92777574c2feda07994cd4f1079a3dfc151f8"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "git",
+        "worktree",
+        "add",
+        "--detach",
+        "/Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment",
+        "a2b92777574c2feda07994cd4f1079a3dfc151f8"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment/emsdk",
+        "install",
+        "6.0.10"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment/emsdk",
+        "activate",
+        "6.0.10"
+      ],
+      "exit": 0
+    }
+  ],
+  "actualRebuild": {
+    "command": [
+      "bash",
+      "-c",
+      "source /Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-official-sdk6-environment/emsdk_env.sh\npython3 scripts/check-wasm-provenance.py --rebuild --output /Users/gmcas/repos/.fleet-maintenance-20261009/dots-report-resolution-20261009/tc26-sdk6-recorded-rebuild-results"
+    ],
+    "sha": "8b8d3b98e244eab9ae8aa84795a4963db06c322f",
+    "nodeExecutable": "/Users/gmcas/repos/.fleet-maintenance-20261009/node24/node-v24.21.0-darwin-arm64/bin/node",
+    "nodeVersion": "v24.21.0",
+    "finishedAt": "2026-10-10T23:50:27.282371+00:00",
+    "exit": 0,
+    "seconds": 23.229063987731934
+  },
+  "retainedLogs": {
+    "report.json": "21d22f1a4873cc214401902e6596399b591a05e779fc0ff34c2e0261ab7d7d88",
+    "hypericum.log": "dcc88f15e8dc059fca4be507886f2d8064392639c25c0c3761b165c1f192c178",
+    "shipovnik.log": "07acfad32bbdb820fe0e52d4d0dca21c59d62d2617e50d22f9559ecb84e6ec97"
+  },
+  "limits": [
+    "Original compiler unknown",
+    "WASM byte identity and separately measured JS identity, not constant-time or security audit",
+    "Historical CI4.0.23 mismatch preserved",
+    "Official SDK test is not an assertion of original environment"
+  ]
+}

@@ -1,0 +1,47 @@
+From https://github.com/QAPP-tech/hypericum_tc26
+ * branch            f3f254038e5539132d112e8f97332a2a351131fe -> FETCH_HEAD
+HEAD is now at f3f2540 Merge branch 'feature/5109-sync-with-pqlr' into 'main'
+emcmake: cmake -S /var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T//crypto-lab-hypericum-f3f254038e5539132d112e8f97332a2a351131fe -B /var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T//crypto-lab-hypericum-build-f3f254038e5539132d112e8f97332a2a351131fe -DPARAMSET=m_128_20 -DGOST_OPTIMIZATION=0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/opt/homebrew/Cellar/emscripten/6.0.10/libexec/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_CROSSCOMPILING_EMULATOR=/opt/homebrew/opt/node/bin/node in directory /Users/gmcas/repos/.fleet-maintenance-20261009/tc26-pair
+-- Using Hypericum parameter set m_128_20
+-- GOST 34.11-2012 no optimization enabled
+-- Configuring done (0.4s)
+-- Generating done (0.0s)
+-- Build files have been written to: /var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/crypto-lab-hypericum-build-f3f254038e5539132d112e8f97332a2a351131fe
+[  5%] Building C object streebog/CMakeFiles/streebog.dir/gost3411-2012-core.c.o
+In file included from /var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/crypto-lab-hypericum-f3f254038e5539132d112e8f97332a2a351131fe/streebog/gost3411-2012-core.c:10:
+/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/crypto-lab-hypericum-f3f254038e5539132d112e8f97332a2a351131fe/streebog/gost3411-2012-core.h:28:1: warning: attribute '__aligned__' is ignored, place it after "union" to apply attribute to type declaration [-Wignored-attributes]
+   28 | ALIGN(16) union uint512_u
+      | ^
+/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/crypto-lab-hypericum-f3f254038e5539132d112e8f97332a2a351131fe/streebog/gost3411-2012-core.h:15:34: note: expanded from macro 'ALIGN'
+   15 | #define ALIGN(x) __attribute__ ((__aligned__(x)))
+      |                                  ^
+1 warning generated.
+[ 10%] Linking C static library libstreebog.a
+[ 10%] Built target streebog
+[ 15%] Building C object CMakeFiles/hypericum.dir/sei_cryptoapi.c.o
+[ 21%] Building C object CMakeFiles/hypericum.dir/sign.c.o
+[ 26%] Building C object CMakeFiles/hypericum.dir/adrs.c.o
+[ 31%] Building C object CMakeFiles/hypericum.dir/sei.c.o
+[ 42%] Building C object CMakeFiles/hypericum.dir/xmss.c.o
+[ 42%] Building C object CMakeFiles/hypericum.dir/wotsc.c.o
+[ 47%] Building C object CMakeFiles/hypericum.dir/sei_urandom.c.o
+[ 52%] Building C object CMakeFiles/hypericum.dir/pack.c.o
+[ 57%] Building C object CMakeFiles/hypericum.dir/hash.c.o
+[ 68%] Building C object CMakeFiles/hypericum.dir/utils.c.o
+[ 68%] Building C object CMakeFiles/hypericum.dir/drbg.c.o
+[ 73%] Building C object CMakeFiles/hypericum.dir/fors.c.o
+[ 78%] Building C object CMakeFiles/hypericum.dir/streebog.c.o
+[ 84%] Building C object CMakeFiles/hypericum.dir/hypericum.c.o
+[ 89%] Building C object CMakeFiles/hypericum.dir/stack.c.o
+[ 94%] Building C object CMakeFiles/hypericum.dir/xmssmt.c.o
+In file included from /var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/crypto-lab-hypericum-f3f254038e5539132d112e8f97332a2a351131fe/streebog.c:30:
+/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/crypto-lab-hypericum-f3f254038e5539132d112e8f97332a2a351131fe/streebog/gost3411-2012-core.h:28:1: warning: attribute '__aligned__' is ignored, place it after "union" to apply attribute to type declaration [-Wignored-attributes]
+   28 | ALIGN(16) union uint512_u
+      | ^
+/var/folders/wz/rhjpp_9d3ql1ykjyrjtwjjwr0000gn/T/crypto-lab-hypericum-f3f254038e5539132d112e8f97332a2a351131fe/streebog/gost3411-2012-core.h:15:34: note: expanded from macro 'ALIGN'
+   15 | #define ALIGN(x) __attribute__ ((__aligned__(x)))
+      |                                  ^
+1 warning generated.
+[100%] Linking C static library libhypericum.a
+[100%] Built target hypericum
+Built /Users/gmcas/repos/.fleet-maintenance-20261009/tc26-pair/src/wasm/hypericum.js and /Users/gmcas/repos/.fleet-maintenance-20261009/tc26-pair/src/wasm/hypericum.wasm

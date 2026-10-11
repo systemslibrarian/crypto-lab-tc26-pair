@@ -151,3 +151,20 @@ expensive work runs in workers so interaction remains responsive.
 *One of the browser demos in the [Crypto Lab](https://crypto-lab.systemslibrarian.dev/) suite.*
 
 *"So whether you eat or drink or whatever you do, do it all for the glory of God." — 1 Corinthians 10:31*
+### Rebuild evidence
+
+`python3 scripts/check-wasm-provenance.py --check` checks fingerprints only.
+`--rebuild` compiles both pinned upstream revisions and compares the results
+with those fingerprints. Its report separates the manifest-selected CI compiler
+from the tools actually found on PATH; a fingerprint-only run records no build
+compiler.
+
+The [2026-10-09 Mac rebuild report](audits/rebuild-2026-10-09/report.json) and
+[fresh Hypericum](audits/rebuild-2026-10-09/hypericum.log) /
+[Shipovnik build logs](audits/rebuild-2026-10-09/shipovnik.log) record two
+byte-identical source builds with Homebrew Emscripten 6.0.10-git on macOS arm64,
+CMake 4.4.3 and the pinned C sources plus tracked native wrappers. No generated
+binary changed. This establishes correspondence in that observed environment;
+it does not identify the original compiler or assert cryptographic assurance.
+The earlier CI build with selected Emscripten 4.0.23 produced different bytes
+for both artifacts; that separate environment remains unreproduced.
