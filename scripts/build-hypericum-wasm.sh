@@ -4,22 +4,24 @@ set -euo pipefail
 readonly UPSTREAM_URL="https://github.com/QAPP-tech/hypericum_tc26.git"
 readonly UPSTREAM_COMMIT="f3f254038e5539132d112e8f97332a2a351131fe"
 readonly ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-readonly SOURCE_DIR="${TMPDIR:-/tmp}/crypto-lab-hypericum-${UPSTREAM_COMMIT}"
-readonly BUILD_DIR="${TMPDIR:-/tmp}/crypto-lab-hypericum-build-${UPSTREAM_COMMIT}"
-readonly OUTPUT_DIR="$ROOT_DIR/src/wasm"
+readonly SCRATCH_DIR="$(mktemp -d "${TMPDIR:-/tmp}/tc26-hypericum.XXXXXXXX")"
+trap 'rm -rf "$SCRATCH_DIR"' EXIT
+readonly SOURCE_DIR="$SCRATCH_DIR/source"
+readonly BUILD_DIR="$SCRATCH_DIR/build"
+readonly OUTPUT_DIR="${WASM_OUTPUT_DIR:-$ROOT_DIR/src/wasm}"
 
 command -v emcmake >/dev/null || {
   printf '%s\n' 'Emscripten is required: https://emscripten.org/docs/getting_started/downloads.html' >&2
   exit 1
 }
 
-if [[ ! -d "$SOURCE_DIR/.git" ]]; then
-  git clone "$UPSTREAM_URL" "$SOURCE_DIR"
-fi
+# Own fresh source and build directories; never reuse local edits or objects.
+git clone --no-checkout "$UPSTREAM_URL" "$SOURCE_DIR"
 git -C "$SOURCE_DIR" fetch --depth 1 origin "$UPSTREAM_COMMIT"
 git -C "$SOURCE_DIR" checkout --detach "$UPSTREAM_COMMIT"
+test "$(git -C "$SOURCE_DIR" rev-parse HEAD)" = "$UPSTREAM_COMMIT"
+test -z "$(git -C "$SOURCE_DIR" status --porcelain)"
 
-rm -rf "$BUILD_DIR"
 emcmake cmake \
   -S "$SOURCE_DIR" \
   -B "$BUILD_DIR" \
