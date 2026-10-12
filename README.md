@@ -115,6 +115,11 @@ No backend or environment variables are required.
 
 ## Build & Verify
 
+The production type-check uses the native TypeScript 7 compiler. Streebog
+currently declares a TypeScript 5.9 JavaScript-API peer, so that API stays
+installed side-by-side; `npm run check:typescript` guards both identities and
+strict native-compiler rejection controls without bypassing peer validation.
+
 - **16 unit tests** cover GOST known-answer vectors, all three Stern branches,
   computed soundness behavior, Fiat-Shamir determinism, Hypericum tree wiring,
   fixture integrity, full QApp sign/verify paths, and tamper rejection.
