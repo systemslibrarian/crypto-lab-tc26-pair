@@ -25,6 +25,7 @@ import {
   type SternChallenge,
   type SternTranscript,
 } from './shipovnik/stern';
+import { EvidenceBinding } from './ui/evidence-binding';
 import { ReferenceWorkerClient } from './ui/worker-client';
 
 interface ReferenceResult {
@@ -141,7 +142,7 @@ app.innerHTML = `
         <label for="ship-message">Message</label>
         <textarea id="ship-message" rows="3" maxlength="160">test test test</textarea>
         <div class="button-row">
-          <button class="button button-primary" id="ship-sign" type="button"><i data-lucide="file-signature" aria-hidden="true"></i><span class="button-label">Sign and verify</span></button>
+          <button class="button button-primary" id="ship-sign" type="button" disabled><i data-lucide="file-signature" aria-hidden="true"></i><span class="button-label">Sign and verify</span></button>
           <button class="button button-danger" id="ship-tamper" type="button" disabled><i data-lucide="triangle-alert" aria-hidden="true"></i><span class="button-label">Change one signature byte</span></button>
         </div>
         <div class="status status-running" id="ship-result" role="status" aria-live="polite">
@@ -207,7 +208,7 @@ app.innerHTML = `
         </div>
         <p class="performance-note"><strong>Portable reference build:</strong> measured cold/warm fixture runs took 11&ndash;83 seconds; signing runs in a worker so the page remains usable.</p>
         <div class="button-row">
-          <button class="button button-primary" id="hyper-sign" type="button"><i data-lucide="file-signature" aria-hidden="true"></i><span class="button-label">Sign and verify this message</span></button>
+          <button class="button button-primary" id="hyper-sign" type="button" disabled><i data-lucide="file-signature" aria-hidden="true"></i><span class="button-label">Sign and verify this message</span></button>
           <button class="button button-danger" id="hyper-tamper" type="button" disabled><i data-lucide="triangle-alert" aria-hidden="true"></i><span class="button-label">Change one signature byte</span></button>
         </div>
         <div class="status status-running" id="hyper-result" role="status" aria-live="polite">
@@ -303,6 +304,8 @@ const shipWorker = new ReferenceWorkerClient(
 const hyperWorker = new ReferenceWorkerClient(
   new Worker(new URL('./hypericum/worker.ts', import.meta.url), { type: 'module' }),
 );
+const shipEvidence = new EvidenceBinding();
+const hyperEvidence = new EvidenceBinding();
 
 function element<ElementType extends HTMLElement>(selector: string): ElementType {
   const found = document.querySelector<ElementType>(selector);
@@ -385,6 +388,7 @@ function setupTabs(): void {
 const fixedMask: Bit[] = [1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1];
 const fixedPermutation = [4, 9, 1, 7, 3, 11, 0, 8, 5, 2, 10, 6];
 let sternTranscript: SternTranscript;
+let fiatShamirBoundMessage: string | null = null;
 
 function randomBitVector(length: number): Bit[] {
   const bytes = crypto.getRandomValues(new Uint8Array(length));
@@ -423,6 +427,7 @@ function renderCommitments(): void {
 }
 
 function newSternRound(): void {
+  fiatShamirBoundMessage = null;
   sternTranscript = createSternTranscript(
     TEACHING_INSTANCE,
     TEACHING_SECRET,
@@ -437,7 +442,12 @@ function newSternRound(): void {
   setStatus('#stern-status', 'idle', 'No challenge checked', 'The unopened branches remain hidden.');
 }
 
-function inspectChallenge(challenge: SternChallenge, source: 'verifier' | 'fiat-shamir'): void {
+function inspectChallenge(
+  challenge: SternChallenge,
+  source: 'verifier' | 'fiat-shamir',
+  boundMessage: string | null = null,
+): void {
+  fiatShamirBoundMessage = source === 'fiat-shamir' ? boundMessage : null;
   document.querySelectorAll<HTMLButtonElement>('[data-challenge]').forEach((button) => {
     button.setAttribute('aria-pressed', String(Number(button.dataset.challenge) === challenge));
   });
@@ -496,7 +506,11 @@ function setupStern(): void {
   });
   element<HTMLButtonElement>('#fiat-shamir').addEventListener('click', () => {
     const message = element<HTMLTextAreaElement>('#ship-message').value;
-    inspectChallenge(deriveFiatShamirChallenge(message, sternTranscript.commitments), 'fiat-shamir');
+    inspectChallenge(
+      deriveFiatShamirChallenge(message, sternTranscript.commitments),
+      'fiat-shamir',
+      message,
+    );
   });
   element<HTMLButtonElement>('#run-cheater').addEventListener('click', runCheatingProver);
 }
@@ -542,31 +556,41 @@ function setupTree(): void {
 }
 
 async function initializeShipovnik(): Promise<void> {
+  const input = element<HTMLTextAreaElement>('#ship-message');
+  const token = shipEvidence.begin(input.value);
   try {
     const result = await shipWorker.request<ReferenceResult>({ action: 'kat' });
     if (!result.passed || !result.verified || !result.signatureHash || !result.signatureBytes) {
       throw new Error('Fixture digest or verifier result did not match');
     }
     setKat('#ship-kat-badge', 'pass', 'QApp KAT matches');
+    element<HTMLButtonElement>('#ship-sign').disabled = false;
+    if (!shipEvidence.accept(token, input.value)) return;
     setStatus('#ship-result', 'pass', 'Fixture signature accepted', `${formatBytes(result.signatureBytes)} bytes, SHA-256 ${shortHash(result.signatureHash)}.`);
     element<HTMLButtonElement>('#ship-tamper').disabled = false;
   } catch (error) {
     setKat('#ship-kat-badge', 'fail', 'QApp KAT failed');
+    if (!shipEvidence.isCurrent(token, input.value)) return;
     setStatus('#ship-result', 'fail', 'Reference path unavailable', error instanceof Error ? error.message : String(error));
   }
 }
 
 async function initializeHypericum(): Promise<void> {
+  const input = element<HTMLTextAreaElement>('#hyper-message');
+  const token = hyperEvidence.begin(input.value);
   try {
     const result = await hyperWorker.request<ReferenceResult>({ action: 'kat' });
     if (!result.passed || !result.verified || !result.signatureHash || !result.signatureBytes) {
       throw new Error('Fixture digest or verifier result did not match');
     }
     setKat('#hyper-kat-badge', 'pass', 'QApp KAT matches');
+    element<HTMLButtonElement>('#hyper-sign').disabled = false;
+    if (!hyperEvidence.accept(token, input.value)) return;
     setStatus('#hyper-result', 'pass', 'Fixture signature accepted', `${formatBytes(result.signatureBytes)} bytes, SHA-256 ${shortHash(result.signatureHash)}.`);
     element<HTMLButtonElement>('#hyper-tamper').disabled = false;
   } catch (error) {
     setKat('#hyper-kat-badge', 'fail', 'QApp KAT failed');
+    if (!hyperEvidence.isCurrent(token, input.value)) return;
     setStatus('#hyper-result', 'fail', 'Reference path unavailable', error instanceof Error ? error.message : String(error));
   }
 }
@@ -575,74 +599,99 @@ function setupReferenceControls(): void {
   const shipInput = element<HTMLTextAreaElement>('#ship-message');
   const shipSign = element<HTMLButtonElement>('#ship-sign');
   const shipTamper = element<HTMLButtonElement>('#ship-tamper');
-  let shipBoundMessage = shipInput.value;
   shipInput.addEventListener('input', () => {
-    if (shipInput.value === shipBoundMessage) return;
-    shipTamper.disabled = true;
-    setStatus('#ship-result', 'idle', 'Previous verdict retired', 'Sign the current message before testing its signature.');
+    if (fiatShamirBoundMessage !== null && shipInput.value !== fiatShamirBoundMessage) {
+      fiatShamirBoundMessage = null;
+      document.querySelectorAll<HTMLButtonElement>('[data-challenge]').forEach((button) => {
+        button.setAttribute('aria-pressed', 'false');
+      });
+      element<HTMLElement>('#stern-response').textContent = 'The message changed. Derive a new Fiat-Shamir challenge from the current message and commitments.';
+      setStatus('#stern-status', 'idle', 'Previous Fiat-Shamir verdict retired', 'The displayed challenge was bound to a different message.');
+    }
+    if (shipEvidence.invalidateIfChanged(shipInput.value)) {
+      shipTamper.disabled = true;
+      setStatus('#ship-result', 'idle', 'Previous verdict retired', 'Sign the current message before testing its signature.');
+    }
   });
   shipSign.addEventListener('click', async () => {
+    const message = shipInput.value;
+    const token = shipEvidence.begin(message);
     setButtonBusy(shipSign, true, 'Signing...');
     shipTamper.disabled = true;
     setStatus('#ship-result', 'running', 'Signing with QApp WASM', 'Generating 219 commitment rounds and checking the result.');
     try {
-      const result = await shipWorker.request<ReferenceResult>({ action: 'sign', message: shipInput.value });
+      const result = await shipWorker.request<ReferenceResult>({ action: 'sign', message });
+      if (!shipEvidence.accept(token, shipInput.value)) return;
       if (!result.verified || !result.signatureHash || !result.signatureBytes) throw new Error('The generated signature did not verify');
-      shipBoundMessage = shipInput.value;
       setStatus('#ship-result', 'pass', 'Signature accepted', `${formatBytes(result.signatureBytes)} bytes, SHA-256 ${shortHash(result.signatureHash)}.`);
       shipTamper.disabled = false;
     } catch (error) {
+      if (!shipEvidence.isCurrent(token, shipInput.value)) return;
       setStatus('#ship-result', 'fail', 'Signing failed', error instanceof Error ? error.message : String(error));
     } finally {
       setButtonBusy(shipSign, false, 'Signing...');
     }
   });
   shipTamper.addEventListener('click', async () => {
+    const message = shipInput.value;
+    const token = shipEvidence.begin(message);
+    shipSign.disabled = true;
     shipTamper.disabled = true;
     setStatus('#ship-result', 'running', 'Verifying changed signature', 'Byte 42,048 has been flipped inside the response section.');
     try {
       const result = await shipWorker.request<ReferenceResult>({ action: 'tamper' });
+      if (!shipEvidence.accept(token, shipInput.value)) return;
       setStatus(
         '#ship-result',
-        result.accepted ? 'fail' : 'fail',
+        'fail',
         result.accepted ? 'Unsafe acceptance' : 'Changed signature rejected',
         result.accepted ? 'The verifier accepted modified bytes.' : `The real verifier rejected the change at byte ${formatBytes(result.changedByte ?? 0)}.`,
       );
     } catch (error) {
+      if (!shipEvidence.isCurrent(token, shipInput.value)) return;
       setStatus('#ship-result', 'fail', 'Verification failed closed', error instanceof Error ? error.message : String(error));
+    } finally {
+      shipSign.disabled = false;
     }
   });
 
   const hyperInput = element<HTMLTextAreaElement>('#hyper-message');
   const hyperSign = element<HTMLButtonElement>('#hyper-sign');
   const hyperTamper = element<HTMLButtonElement>('#hyper-tamper');
-  let hyperBoundMessage = hyperInput.value;
   hyperInput.addEventListener('input', () => {
-    if (hyperInput.value === hyperBoundMessage) return;
-    hyperTamper.disabled = true;
-    setStatus('#hyper-result', 'idle', 'Previous verdict retired', 'Sign the current message before testing its signature.');
+    if (hyperEvidence.invalidateIfChanged(hyperInput.value)) {
+      hyperTamper.disabled = true;
+      setStatus('#hyper-result', 'idle', 'Previous verdict retired', 'Sign the current message before testing its signature.');
+    }
   });
   hyperSign.addEventListener('click', async () => {
+    const message = hyperInput.value;
+    const token = hyperEvidence.begin(message);
     setButtonBusy(hyperSign, true, 'Signing in worker...');
     hyperTamper.disabled = true;
     setStatus('#hyper-result', 'running', 'Signing with QApp WASM', 'Portable Streebog tree traversal is running off the main thread.');
     try {
-      const result = await hyperWorker.request<ReferenceResult>({ action: 'sign', message: hyperInput.value });
+      const result = await hyperWorker.request<ReferenceResult>({ action: 'sign', message });
+      if (!hyperEvidence.accept(token, hyperInput.value)) return;
       if (!result.verified || !result.signatureHash || !result.signatureBytes) throw new Error('The generated signature did not verify');
-      hyperBoundMessage = hyperInput.value;
       setStatus('#hyper-result', 'pass', 'Signature accepted', `${formatBytes(result.signatureBytes)} bytes, SHA-256 ${shortHash(result.signatureHash)}.`);
       hyperTamper.disabled = false;
     } catch (error) {
+      if (!hyperEvidence.isCurrent(token, hyperInput.value)) return;
       setStatus('#hyper-result', 'fail', 'Signing failed', error instanceof Error ? error.message : String(error));
     } finally {
       setButtonBusy(hyperSign, false, 'Signing in worker...');
     }
   });
   hyperTamper.addEventListener('click', async () => {
+    const message = hyperInput.value;
+    const token = hyperEvidence.begin(message);
+    hyperSign.disabled = true;
     hyperTamper.disabled = true;
     setStatus('#hyper-result', 'running', 'Verifying changed signature', 'Byte 48 has been flipped inside the signature.');
     try {
       const result = await hyperWorker.request<ReferenceResult>({ action: 'tamper' });
+      if (!hyperEvidence.accept(token, hyperInput.value)) return;
       setStatus(
         '#hyper-result',
         'fail',
@@ -650,7 +699,10 @@ function setupReferenceControls(): void {
         result.accepted ? 'The verifier accepted modified bytes.' : `The real verifier rejected the change at byte ${result.changedByte ?? 0}.`,
       );
     } catch (error) {
+      if (!hyperEvidence.isCurrent(token, hyperInput.value)) return;
       setStatus('#hyper-result', 'fail', 'Verification failed closed', error instanceof Error ? error.message : String(error));
+    } finally {
+      hyperSign.disabled = false;
     }
   });
 }

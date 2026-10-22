@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run check:typescript && node node_modules/@typescript/native/bin/tsc --noEmit && vite build",
+    "build": "npm run check:typescript && npm run test:maintenance && node node_modules/@typescript/native/bin/tsc --noEmit && vite build",
     "check:typescript": "node --test tests/tooling.node.mjs",
     "fixtures:generate": "node scripts/generate-reference-fixtures.mjs",
     "wasm:build": "bash scripts/build-hypericum-wasm.sh && bash scripts/build-shipovnik-wasm.sh",
     "preview": "vite preview",
     "test": "vitest run && npm run check:typescript",
+    "test:maintenance": "node --test tests/maintenance-controls.node.mjs",
     "test:watch": "vitest",
     "test:a11y": "playwright test"
   },
