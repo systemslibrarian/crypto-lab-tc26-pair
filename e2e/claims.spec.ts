@@ -66,6 +66,25 @@ test('rendered cryptographic claims agree with independent inputs and failure pa
   await expect(page.locator('#ship-result')).toHaveAttribute('data-tone', 'idle');
   await expect(page.locator('#ship-result')).toContainText('Previous verdict retired');
 
+  await page.evaluate(() => {
+    const input = document.querySelector<HTMLTextAreaElement>('#ship-message');
+    const sign = document.querySelector<HTMLButtonElement>('#ship-sign');
+    if (!input || !sign) throw new Error('Shipovnik controls are unavailable');
+    sign.click();
+    input.value = 'changed while the worker is signing';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await expect(page.locator('#ship-result')).toHaveAttribute('data-tone', 'idle');
+  await expect(page.locator('#ship-sign')).toBeEnabled({ timeout: 30_000 });
+  await expect(page.locator('#ship-result')).toContainText('Previous verdict retired');
+  await expect(page.locator('#ship-tamper')).toBeDisabled();
+
+  await page.getByRole('button', { name: 'Derive Fiat-Shamir challenge' }).click();
+  await expect(page.locator('#stern-status')).toHaveAttribute('data-tone', 'pass');
+  await shipMessage.fill('changed after the Fiat-Shamir challenge');
+  await expect(page.locator('#stern-status')).toHaveAttribute('data-tone', 'idle');
+  await expect(page.locator('#stern-status')).toContainText('Previous Fiat-Shamir verdict retired');
+
   await page.getByRole('tab', { name: 'Hypericum' }).click();
   await expect(page.locator('#hyper-kat-badge')).toHaveAttribute('data-state', 'pass', { timeout: 120_000 });
   const message = await page.locator('#hyper-message').inputValue();
