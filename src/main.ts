@@ -25,6 +25,7 @@ import {
   type SternChallenge,
   type SternTranscript,
 } from './shipovnik/stern';
+import { randomPermutation } from './uniform';
 import { EvidenceBinding } from './ui/evidence-binding';
 import { ReferenceWorkerClient } from './ui/worker-client';
 
@@ -393,16 +394,6 @@ let fiatShamirBoundMessage: string | null = null;
 function randomBitVector(length: number): Bit[] {
   const bytes = crypto.getRandomValues(new Uint8Array(length));
   return Array.from(bytes, (value) => (value & 1) as Bit);
-}
-
-function randomPermutation(length: number): number[] {
-  const permutation = Array.from({ length }, (_, index) => index);
-  const random = crypto.getRandomValues(new Uint32Array(length));
-  for (let index = length - 1; index > 0; index -= 1) {
-    const swapIndex = random[index] % (index + 1);
-    [permutation[index], permutation[swapIndex]] = [permutation[swapIndex], permutation[index]];
-  }
-  return permutation;
 }
 
 function renderCommitments(): void {
