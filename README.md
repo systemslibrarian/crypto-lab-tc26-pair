@@ -15,8 +15,9 @@ code-based Shipovnik scheme and the stateless hash-based Hypericum scheme.
 
 Shipovnik turns Stern's three-challenge identification protocol into a
 non-interactive signature using Fiat-Shamir. Its security target is syndrome
-decoding: the signer proves knowledge of a low-weight codeword matching a public
-syndrome without revealing that witness.
+decoding: the signer proves knowledge of a low-weight vector whose syndrome
+equals a public value, without revealing that witness. The witness is not a
+codeword — a codeword's syndrome is zero, and the public syndrome here is not.
 
 Hypericum follows the stateless hash-signature design family associated with
 SPHINCS+: FORS+C trees, WOTS+C chains, and an XMSS hypertree. The pinned

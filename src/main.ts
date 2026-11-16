@@ -74,7 +74,7 @@ app.innerHTML = `
         <div>
           <p class="eyebrow">Code-based zero knowledge</p>
           <h2>Open one branch. Hide the other two.</h2>
-          <p class="pane-intro">A prover commits to three linked views of a secret low-weight codeword. The verifier opens one view at random; Fiat-Shamir replaces that live question with a Streebog-derived challenge.</p>
+          <p class="pane-intro">A prover commits to three linked views of a secret low-weight vector — the error vector whose syndrome is public. The verifier opens one view at random; Fiat-Shamir replaces that live question with a Streebog-derived challenge.</p>
         </div>
         <div class="kat-badge is-running" id="ship-kat-badge" data-state="running" role="status" aria-live="polite">
           <span class="kat-mark">RUN</span><span>QApp KAT loading</span>

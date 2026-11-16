@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest';
 import {
   createSternTranscript,
   deriveFiatShamirChallenge,
+  hammingWeight,
+  syndrome,
   TEACHING_INSTANCE,
   TEACHING_SECRET,
   verifySternOpening,
@@ -27,6 +29,17 @@ describe('reduced Stern identification round', () => {
       transcript.commitments,
       transcript.openings[challenge],
     )).toBe(true);
+  });
+
+  it('has a witness that is a low-weight vector, not a codeword', () => {
+    // A codeword satisfies H*c = 0 by definition of the parity-check matrix, so
+    // the thing proved here cannot be a codeword: the public syndrome is H
+    // times the witness and it is non-zero. This is the syndrome-decoding
+    // witness -- fixed weight, prescribed syndrome -- and the page and README
+    // say vector for that reason.
+    expect(hammingWeight(TEACHING_SECRET)).toBe(TEACHING_INSTANCE.weight);
+    expect(TEACHING_INSTANCE.syndrome).toEqual(syndrome(TEACHING_INSTANCE.matrix, TEACHING_SECRET));
+    expect(hammingWeight(TEACHING_INSTANCE.syndrome)).toBeGreaterThan(0);
   });
 
   it('catches a prover with a weight-correct vector that has the wrong public syndrome', () => {
