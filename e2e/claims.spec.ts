@@ -88,20 +88,42 @@ test('rendered cryptographic claims agree with independent inputs and failure pa
   await page.getByRole('tab', { name: 'Hypericum' }).click();
   await expect(page.locator('#hyper-kat-badge')).toHaveAttribute('data-state', 'pass', { timeout: 120_000 });
   const message = await page.locator('#hyper-message').inputValue();
+  await expect(page.locator('#hyper-result')).toHaveAttribute('data-tone', 'idle');
+  await expect(page.locator('#hyper-result')).toContainText('Current message unsigned');
+  await expect(page.locator('#hyper-result')).toContainText('Example of Hypericum signature for parameter set m_128_20');
+  await expect(page.locator('#hyper-result')).toContainText('0x00');
+  expect(message).not.toContain('Example of Hypericum');
   await expect(page.locator('#hash-output')).toHaveText(expectedTeachingRoot(message));
   await expect(page.locator('[data-negative-claim="hash-reduction"]')).toBeVisible();
   await page.getByRole('button', { name: 'Change one signature byte' }).click();
   await expect(page.locator('#hyper-result')).toHaveAttribute('data-tone', 'fail');
   await expect(page.locator('#hyper-result')).toContainText('Changed signature rejected');
+  await expect(page.locator('#hyper-result')).toContainText('published fixture signature');
 
   await page.getByRole('tab', { name: 'The Mirror' }).click();
   await expect(page.getByText('7,856 B', { exact: true })).toBeVisible();
   await expect(page.getByText('9,772 B', { exact: true })).toBeVisible();
   await expect(page.getByText('805,868 B', { exact: true })).toBeVisible();
+  for (const row of await page.locator('.size-row').all()) {
+    const bytes = Number((await row.locator('strong').innerText()).replace(/[^0-9]/g, ''));
+    const declaredWidth = await row.locator('.bar').evaluate(bar => parseFloat((bar as HTMLElement).style.getPropertyValue('--bar-size')));
+    expect(declaredWidth).toBeCloseTo(100 * Math.log(bytes / 1024) / Math.log(1_072_662 / 1024), 8);
+  }
   await page.getByText('Sources and scope').click();
   const noticeLink = page.getByRole('link', { name: 'BSD-2 attribution for the compiled reference code' });
   await expect(noticeLink).toHaveAttribute('href', './THIRD_PARTY_NOTICES.txt');
   const noticeResponse = await page.request.get(new URL('./THIRD_PARTY_NOTICES.txt', page.url()).href);
   expect(noticeResponse.ok()).toBe(true);
   expect(await noticeResponse.text()).toContain('Copyright (c) 2023, QApp');
+});
+
+test('an unavailable Hypericum example leaves the signing controls disabled', async ({ page }) => {
+  await page.route('**/fixtures/hypericum-m-128-20.bin', route => route.fulfill({ status: 503, body: '' }));
+  await page.goto('.');
+  await page.getByRole('tab', { name: 'Hypericum' }).click();
+  await expect(page.locator('#hyper-kat-badge')).toHaveAttribute('data-state', 'fail');
+  await expect(page.locator('#hyper-result')).toContainText('Reference path unavailable');
+  await expect(page.locator('#hyper-sign')).toBeDisabled();
+  await expect(page.locator('#hyper-tamper')).toBeDisabled();
+  await expect(page.locator('[data-negative-claim="hash-reduction"]')).not.toContainText('The fixture verifies');
 });

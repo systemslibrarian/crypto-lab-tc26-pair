@@ -8,8 +8,8 @@ code-based Shipovnik scheme and the stateless hash-based Hypericum scheme.
 > **Not production cryptography.** This is a teaching demo. The full signers and
 > verifiers are pinned QApp C reference implementations compiled to WebAssembly;
 > the visible one-round Stern protocol and four-leaf Merkle tree are reduced,
-> explicitly labeled teaching models. Secrets stay in browser memory, but the
-> code is not audited or hardened against side channels.
+> explicitly labeled teaching models. Both signers use published fixture keys and
+> fresh browser randomness. Anyone with a copy can sign under those keys.
 
 ## What It Is
 
@@ -31,7 +31,8 @@ the complete signer and verifier execute QApp's bundled C implementation.
 1. **Shipovnik Stern round** — Seal three Streebog commitments, choose any of
    the three challenges, and recompute the two opened commitments. A
    witness-free transcript visibly answers two branches and is caught by the
-   third, yielding a measured per-round detection probability of `1/3`.
+   third. Enumerating the three outcomes gives an exact detection probability of
+   `1/3` for this transcript under a single uniform challenge.
 2. **Fiat-Shamir step** — Derive the challenge from the message and commitments
    with Streebog-512, replacing the interactive verifier question.
 3. **Shipovnik reference path** — Verify the deterministic zero-entropy QApp
@@ -41,7 +42,8 @@ the complete signer and verifier execute QApp's bundled C implementation.
    computed four-leaf Merkle slice, beside the full `m_128_20` FORS+C, WOTS+C,
    and two-layer XMSS structure.
 5. **Hypericum reference path** — Verify QApp's published deterministic
-   `output_m_128_20.txt` example, optionally run its complete portable signer in
+   `output_m_128_20.txt` example, whose signed message includes a trailing zero byte.
+   The student message uses exactly its UTF-8 bytes. Optionally run the portable signer in
    a worker, and alter one signature byte to exercise rejection.
 6. **The Mirror** — Compare Hypericum with SLH-DSA and show a logarithmic size
    chart for SLH-DSA-SHA2-128s, Hypericum, and Shipovnik.

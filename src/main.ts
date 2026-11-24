@@ -14,6 +14,7 @@ import {
 } from 'lucide';
 
 import './styles.css';
+import { HYPERICUM_KAT, SHIPOVNIK_KAT } from './fixtures';
 import { buildTeachingHypertree, type HypertreeNode } from './hypericum/hypertree';
 import {
   createSternTranscript,
@@ -39,6 +40,14 @@ interface ReferenceResult {
 }
 
 type Tone = 'idle' | 'running' | 'pass' | 'fail' | 'alarm';
+
+const shipovnikMaximum = 1_072_662;
+const signatureSizes = [
+  { label: 'SLH-DSA-SHA2-128s', bytes: 7_856, bar: 'slh' },
+  { label: 'Hypericum m_128_20', bytes: HYPERICUM_KAT.signatureBytes, bar: 'hyper' },
+  { label: 'Shipovnik fixture', bytes: SHIPOVNIK_KAT.signatureBytes, bar: 'ship' },
+  { label: 'Shipovnik maximum', bytes: shipovnikMaximum, bar: 'max' },
+];
 
 const app = document.querySelector<HTMLElement>('#app');
 if (!app) throw new Error('Missing #app mount point');
@@ -73,8 +82,8 @@ app.innerHTML = `
       <div class="pane-heading">
         <div>
           <p class="eyebrow">Code-based zero knowledge</p>
-          <h2>Open one branch. Hide the other two.</h2>
-          <p class="pane-intro">A prover commits to three linked views of a secret low-weight vector — the error vector whose syndrome is public. The verifier opens one view at random; Fiat-Shamir replaces that live question with a Streebog-derived challenge.</p>
+          <h2>One challenge opens two commitments.</h2>
+          <p class="pane-intro">A prover commits to three linked views of a secret low-weight vector — the error vector whose syndrome is public. The verifier chooses one of three challenges uniformly. Each response opens two commitments and leaves one hidden. Fiat-Shamir derives the challenge from the message and commitments.</p>
         </div>
         <div class="kat-badge is-running" id="ship-kat-badge" data-state="running" role="status" aria-live="polite">
           <span class="kat-mark">RUN</span><span>QApp KAT loading</span>
@@ -104,7 +113,7 @@ app.innerHTML = `
           <div class="response-copy" id="stern-response">The commitments are sealed. Choose one branch for the verifier to open.</div>
           <div class="status status-idle" id="stern-status" role="status" aria-live="polite">
             <span class="status-mark">WAIT</span>
-            <span><strong>No challenge checked</strong><small>The unopened branches remain hidden.</small></span>
+            <span><strong>No challenge checked</strong><small>Choose a challenge to check two commitments.</small></span>
           </div>
         </div>
       </div>
@@ -117,17 +126,17 @@ app.innerHTML = `
           <i data-lucide="triangle-alert" aria-hidden="true"></i><span class="button-label">Test a prover without the witness</span>
         </button>
       </div>
-      <p class="scope-note">Teaching round: <code>n = 12</code>, weight <code>3</code>. QApp reference: <code>n = 2,896</code>, weight <code>318</code>, repeated <code>219</code> times.</p>
+      <p class="scope-note">In a protocol run the prover answers one challenge per set of commitments. Here you can inspect the alternatives. Teaching round: <code>n = 12</code>, weight <code>3</code>. QApp reference: <code>n = 2,896</code>, weight <code>318</code>, repeated <code>219</code> times.</p>
 
       <section class="cheat-result" id="cheat-result" aria-labelledby="cheat-title">
         <div>
           <p class="eyebrow" id="cheat-title">Cut and choose</p>
-          <p id="cheat-summary">Run the witness-free prover to measure which openings survive.</p>
+          <p id="cheat-summary">Check all three challenges for this example transcript.</p>
         </div>
         <div class="branch-outcomes" id="branch-outcomes"></div>
         <div class="soundness-metric">
-          <span>caught per round</span>
-          <strong id="caught-probability">not measured</strong>
+          <span>caught under a uniform challenge</span>
+          <strong id="caught-probability">awaiting branch checks</strong>
           <small id="repeated-soundness">The full reference scheme repeats 219 rounds.</small>
         </div>
       </section>
@@ -140,6 +149,7 @@ app.innerHTML = `
           </div>
           <span class="runtime-chip">QApp C &rarr; WASM</span>
         </div>
+        <p class="scope-note">This signer uses a published fixture key and fresh randomness. Anyone with the fixture can sign under the same key.</p>
         <label for="ship-message">Message</label>
         <textarea id="ship-message" rows="3" maxlength="160">test test test</textarea>
         <div class="button-row">
@@ -150,8 +160,8 @@ app.innerHTML = `
           <span class="status-mark">RUN</span><span><strong>Checking fixture</strong><small>The real verifier is loading in a worker.</small></span>
         </div>
         <div class="negative-claim" data-negative-claim="shipovnik-size">
-          <strong>VALID, AND 805,868 BYTES.</strong>
-          <span>The pinned signature works; correctness does not make the Stern transcript small. The API reserves up to 1,072,662 bytes.</span>
+          <strong>805,868 BYTES IN THE FIXTURE.</strong>
+          <span>The fixture’s size illustrates the bandwidth cost of a Stern transcript. The API reserves up to 1,072,662 bytes.</span>
         </div>
       </section>
     </section>
@@ -182,7 +192,7 @@ app.innerHTML = `
               <div><span>Streebog-256</span><code id="hash-output" tabindex="0" role="region" aria-label="Selected hash output"></code></div>
             </div>
           </div>
-          <p class="scope-note">This four-leaf tree executes the hash-and-wire mechanism. The full <code>m_128_20</code> signer below runs QApp's 20-level, two-layer construction.</p>
+          <p class="scope-note">The four leaves use labeled message hashes to illustrate tree wiring. The slice does not generate a FORS root or a WOTS+C key. The full <code>m_128_20</code> signer below runs QApp's 20-level, two-layer construction.</p>
         </section>
 
         <aside class="structure-map" aria-labelledby="structure-title">
@@ -207,7 +217,7 @@ app.innerHTML = `
           </div>
           <span class="runtime-chip">m_128_20 &middot; QApp C &rarr; WASM</span>
         </div>
-        <p class="performance-note"><strong>Portable reference build:</strong> measured cold/warm fixture runs took 11&ndash;83 seconds; signing runs in a worker so the page remains usable.</p>
+        <p class="performance-note"><strong>Portable reference build:</strong> Signing uses the published fixture key and fresh randomness. Anyone with the fixture can sign under the same key. Measured cold/warm fixture runs took 11&ndash;83 seconds; signing runs in a worker so the page remains usable.</p>
         <div class="button-row">
           <button class="button button-primary" id="hyper-sign" type="button" disabled><i data-lucide="file-signature" aria-hidden="true"></i><span class="button-label">Sign and verify this message</span></button>
           <button class="button button-danger" id="hyper-tamper" type="button" disabled><i data-lucide="triangle-alert" aria-hidden="true"></i><span class="button-label">Change one signature byte</span></button>
@@ -216,8 +226,8 @@ app.innerHTML = `
           <span class="status-mark">RUN</span><span><strong>Checking fixture</strong><small>The real verifier is loading in a worker.</small></span>
         </div>
         <div class="negative-claim" data-negative-claim="hash-reduction">
-          <strong>VALID, WITH A LIMIT.</strong>
-          <span>The fixture verifies, but a hash-based construction inherits the security limits of its hash and parameter choices; a green signature proves no more.</span>
+          <strong>WHAT VERIFICATION ESTABLISHES</strong>
+          <span>Acceptance checks the signature against its message and public key. Security also depends on the hash, parameters and complete construction.</span>
         </div>
       </section>
     </section>
@@ -247,13 +257,13 @@ app.innerHTML = `
       </div>
 
       <section class="size-section" aria-labelledby="size-title">
-        <div class="section-label"><span>Bytes on the wire</span> logarithmic scale</div>
+        <div class="section-label"><span>Bytes on the wire</span> logarithmic scale from 1 KiB</div>
         <h3 id="size-title">Signature size changes the engineering</h3>
-        <div class="size-chart" role="img" aria-label="Logarithmic comparison of signature byte sizes">
-          <div class="size-row"><span>SLH-DSA-SHA2-128s</span><div class="bar-track"><span class="bar bar-slh" style="--bar-size: 45%"></span></div><strong>7,856 B</strong></div>
-          <div class="size-row"><span>Hypericum m_128_20</span><div class="bar-track"><span class="bar bar-hyper" style="--bar-size: 49%"></span></div><strong>9,772 B</strong></div>
-          <div class="size-row"><span>Shipovnik fixture</span><div class="bar-track"><span class="bar bar-ship" style="--bar-size: 94%"></span></div><strong>805,868 B</strong></div>
-          <div class="size-row"><span>Shipovnik maximum</span><div class="bar-track"><span class="bar bar-max" style="--bar-size: 100%"></span></div><strong>1,072,662 B</strong></div>
+        <div class="size-chart" role="list" aria-label="Signature sizes in bytes">
+          ${signatureSizes.map(({ label, bytes, bar }) => {
+            const width = 100 * Math.log2(bytes / 1024) / Math.log2(shipovnikMaximum / 1024);
+            return `<div class="size-row" role="listitem"><span>${label}</span><div class="bar-track" aria-hidden="true"><span class="bar bar-${bar}" style="--bar-size: ${width}%"></span></div><strong>${formatBytes(bytes)} B</strong></div>`;
+          }).join('')}
         </div>
         <p class="chart-source">SLH-DSA-SHA2-128s size: FIPS 205. Hypericum and Shipovnik sizes: pinned QApp fixtures in this repository.</p>
       </section>
@@ -307,6 +317,7 @@ const hyperWorker = new ReferenceWorkerClient(
 );
 const shipEvidence = new EvidenceBinding();
 const hyperEvidence = new EvidenceBinding();
+let hyperSignatureIsFixture = true;
 
 function element<ElementType extends HTMLElement>(selector: string): ElementType {
   const found = document.querySelector<ElementType>(selector);
@@ -430,7 +441,7 @@ function newSternRound(): void {
     button.setAttribute('aria-pressed', 'false');
   });
   element<HTMLElement>('#stern-response').textContent = 'The commitments are sealed. Choose one branch for the verifier to open.';
-  setStatus('#stern-status', 'idle', 'No challenge checked', 'The unopened branches remain hidden.');
+  setStatus('#stern-status', 'idle', 'No challenge checked', 'Choose a challenge to check two commitments.');
 }
 
 function inspectChallenge(
@@ -574,10 +585,11 @@ async function initializeHypericum(): Promise<void> {
     if (!result.passed || !result.verified || !result.signatureHash || !result.signatureBytes) {
       throw new Error('Fixture digest or verifier result did not match');
     }
-    setKat('#hyper-kat-badge', 'pass', 'QApp KAT matches');
+    setKat('#hyper-kat-badge', 'pass', 'QApp fixture verified');
     element<HTMLButtonElement>('#hyper-sign').disabled = false;
-    if (!hyperEvidence.accept(token, input.value)) return;
-    setStatus('#hyper-result', 'pass', 'Fixture signature accepted', `${formatBytes(result.signatureBytes)} bytes, SHA-256 ${shortHash(result.signatureHash)}.`);
+    if (!hyperEvidence.isCurrent(token, input.value)) return;
+    setStatus('#hyper-result', 'idle', 'Current message unsigned',
+      `QApp’s verified fixture signs “${HYPERICUM_KAT.message}” followed by 0x00. Change a byte to test the fixture, or sign the editor’s UTF-8 bytes to test your message.`);
     element<HTMLButtonElement>('#hyper-tamper').disabled = false;
   } catch (error) {
     setKat('#hyper-kat-badge', 'fail', 'QApp KAT failed');
@@ -631,12 +643,15 @@ function setupReferenceControls(): void {
     setStatus('#ship-result', 'running', 'Verifying changed signature', 'Byte 42,048 has been flipped inside the response section.');
     try {
       const result = await shipWorker.request<ReferenceResult>({ action: 'tamper' });
-      if (!shipEvidence.accept(token, shipInput.value)) return;
+      if (!shipEvidence.isCurrent(token, shipInput.value)) return;
+      if (typeof result.accepted !== 'boolean' || typeof result.changedByte !== 'number' || !Number.isInteger(result.changedByte) || result.changedByte < 0) {
+        throw new Error('The verifier returned no complete result for the changed byte.');
+      }
       setStatus(
         '#ship-result',
         'fail',
         result.accepted ? 'Unsafe acceptance' : 'Changed signature rejected',
-        result.accepted ? 'The verifier accepted modified bytes.' : `The real verifier rejected the change at byte ${formatBytes(result.changedByte ?? 0)}.`,
+        result.accepted ? 'The verifier accepted modified bytes.' : `The real verifier rejected the change at byte ${formatBytes(result.changedByte)}.`,
       );
     } catch (error) {
       if (!shipEvidence.isCurrent(token, shipInput.value)) return;
@@ -663,8 +678,10 @@ function setupReferenceControls(): void {
     setStatus('#hyper-result', 'running', 'Signing with QApp WASM', 'Portable Streebog tree traversal is running off the main thread.');
     try {
       const result = await hyperWorker.request<ReferenceResult>({ action: 'sign', message });
-      if (!hyperEvidence.accept(token, hyperInput.value)) return;
+      if (!hyperEvidence.isCurrent(token, hyperInput.value)) return;
       if (!result.verified || !result.signatureHash || !result.signatureBytes) throw new Error('The generated signature did not verify');
+      hyperEvidence.accept(token, hyperInput.value);
+      hyperSignatureIsFixture = false;
       setStatus('#hyper-result', 'pass', 'Signature accepted', `${formatBytes(result.signatureBytes)} bytes, SHA-256 ${shortHash(result.signatureHash)}.`);
       hyperTamper.disabled = false;
     } catch (error) {
@@ -682,12 +699,15 @@ function setupReferenceControls(): void {
     setStatus('#hyper-result', 'running', 'Verifying changed signature', 'Byte 48 has been flipped inside the signature.');
     try {
       const result = await hyperWorker.request<ReferenceResult>({ action: 'tamper' });
-      if (!hyperEvidence.accept(token, hyperInput.value)) return;
+      if (!hyperEvidence.isCurrent(token, hyperInput.value)) return;
+      if (typeof result.accepted !== 'boolean' || typeof result.changedByte !== 'number' || !Number.isInteger(result.changedByte) || result.changedByte < 0) {
+        throw new Error('The verifier returned no complete result for the changed byte.');
+      }
       setStatus(
         '#hyper-result',
         'fail',
         result.accepted ? 'Unsafe acceptance' : 'Changed signature rejected',
-        result.accepted ? 'The verifier accepted modified bytes.' : `The real verifier rejected the change at byte ${result.changedByte ?? 0}.`,
+        result.accepted ? 'The verifier accepted modified bytes.' : `The verifier rejected the change at byte ${result.changedByte} of the ${hyperSignatureIsFixture ? "published fixture signature" : "signature for your message"}.`,
       );
     } catch (error) {
       if (!hyperEvidence.isCurrent(token, hyperInput.value)) return;
